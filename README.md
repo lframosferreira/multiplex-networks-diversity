@@ -1,6 +1,6 @@
 # Assessing Diversity in Multiplex Networks
 
-Implementation in Python of the metrics defined and used in the article:
+Python implementation of the metrics defined and used in the article:
 
 Assessing Diversity in Multiplex Networks by L.C. Carpi, T.A. Schieber, P.M. Pardalos, G. Marfany, C. Masoller, A. Díaz-Guilera, M.G. Ravetti (https://arxiv.org/abs/1805.12350)
 
@@ -12,7 +12,7 @@ https://github.com/tischieber/assessing_diversity_in_multiplex_networks
 
 - Renato Vimieiro
 - Paulo Henrique de Souza Coelho (@paulohdscoelho)
-- Luís Felipe Ramos Ferreira (@LuisFelipeRamos)
+- Luís Felipe Ramos Ferreira (@lframosferreira)
 
 ## Code
 
