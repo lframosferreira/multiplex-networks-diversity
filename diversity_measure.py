@@ -112,5 +112,8 @@ def less_contribute_rank(node_distance_distributions: npt.NDArray[np.float_], tr
 
         layer_difference_matrix[less_contribute_layer,:] = np.inf
         layer_difference_matrix[:,less_contribute_layer] = np.inf
+    
+    # work around, we should make this more optimal
+    rank.append(np.where(np.isin(np.arange(4),rank)==False)[0][0])
 
     return np.array(rank)
