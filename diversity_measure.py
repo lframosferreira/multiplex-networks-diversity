@@ -49,7 +49,7 @@ def transition_matrix(graph: npt.NDArray[np.int_]) -> npt.NDArray[np.float_]:
 @rtype: np.float_
 @returns: the float value between 0 and 1 that represents the difference between the layers/graphs
 """
-def layer_difference(node_dist_G, trans_mat_G, node_dist_H, trans_mat_H) -> np.float_:
+def layer_difference(node_dist_G: npt.NDArray[np.float_], trans_mat_G: npt.NDArray[np.float_], node_dist_H: npt.NDArray[np.float_], trans_mat_H: npt.NDArray[np.float_]) -> np.float_:
 
     node_dist_G = np.pad(node_dist_G, [(0, 0), (0, node_dist_G.shape[0] - node_dist_G.shape[1])])
     node_dist_H = np.pad(node_dist_H, [(0, 0), (0, node_dist_H.shape[0] - node_dist_H.shape[1])])
