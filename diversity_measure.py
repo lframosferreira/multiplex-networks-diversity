@@ -3,6 +3,7 @@ import numpy as np
 import numpy.typing as npt
 from scipy.spatial.distance import jensenshannon as JSD
 from scipy.sparse.csgraph import shortest_path
+import rustworkx as rx
 
 """Calculates a graph node distribution
 
@@ -13,7 +14,8 @@ from scipy.sparse.csgraph import shortest_path
 @returns: the node distribution of the graph
 """
 def node_distance_distribution(graph: npt.NDArray[np.int_]) -> npt.NDArray[np.float_]:
-    dist: npt.NDArray[np.int_] = shortest_path(graph, directed=False, unweighted=True).astype(np.int_)
+    G = rx.PyGraph(multigraph=False).from_adjacency_matrix(graph.astype(np.float64))
+    dist: npt.NDArray[np.int_] = rx.distance_matrix(G, parallel_threshold=300).astype(np.int_)
     dist[dist < 0] = dist.shape[0]
     N: np.int_ = dist.max() + 1
     dist_offsets: npt.NDArray[np.int_] = dist + np.arange(dist.shape[0])[:, None] * N
@@ -63,7 +65,7 @@ def layer_difference(node_dist_G: npt.NDArray[np.float_], trans_mat_G: npt.NDArr
     node_difference: npt.NDArray[np.float_] = (node_distance_distribution_diff + transition_matrix_diff) / 2
     return np.around(np.average(node_difference), decimals=4)
 
-"""Calculates the less contribute list of the layer/graph network
+"""Calculates the less contribute ranking of the layer/graph network
 
 @type node_dist_G: npt.NDArray[np.float_]
 @param node_dist_G: the list of node distributions for each layer/graph
@@ -72,7 +74,7 @@ def layer_difference(node_dist_G: npt.NDArray[np.float_], trans_mat_G: npt.NDArr
 @param node_dist_G: the list of transition matrices for each layer/graph
 
 @rtype: npt.NDArray[np.int_]
-@returns: the less contribute list
+@returns: the less contribute ranking
 """
 def less_contribute_rank(node_distance_distributions: npt.NDArray[np.float_], trasition_matrices: npt.NDArray[np.float_]) -> npt.NDArray[np.int_]:
 
@@ -93,9 +95,9 @@ def less_contribute_rank(node_distance_distributions: npt.NDArray[np.float_], tr
 
     np.fill_diagonal(layer_difference_matrix, 1)
 
-    rank: list = list()
+    ranking: npt.NDArray[np.int_] = np.empty(number_of_layers, dtype=np.int_)
 
-    for _ in range(layer_difference_matrix.shape[0] - 1):    
+    for i in np.arange(number_of_layers - 1):    
      
         layer_a, layer_b = np.unravel_index(layer_difference_matrix.argmin(), layer_difference_matrix.shape)
 
@@ -108,12 +110,12 @@ def less_contribute_rank(node_distance_distributions: npt.NDArray[np.float_], tr
 
         less_contribute_layer: np.int_ = layer_a if dist_a_to_set <= dist_b_to_set else layer_b
         
-        rank.append(less_contribute_layer)
+        ranking[i] = less_contribute_layer
 
         layer_difference_matrix[less_contribute_layer,:] = np.inf
         layer_difference_matrix[:,less_contribute_layer] = np.inf
     
     # work around, we should make this more optimal
-    rank.append(np.where(np.isin(np.arange(4),rank)==False)[0][0])
+    ranking[number_of_layers - 1] = np.where(np.isin(np.arange(number_of_layers), ranking) == False)[0][0]
 
-    return np.array(rank)
+    return ranking
