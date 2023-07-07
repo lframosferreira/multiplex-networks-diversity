@@ -145,12 +145,13 @@ def less_contribute_rank(
 
         diversity += smallest_layer_difference
 
-        dist_a_to_set = np.amin(
+        dist_a_to_set: float = np.amin(
             layer_difference_matrix[layer_a],
             where=layer_difference_matrix[layer_a] != smallest_layer_difference,
             initial=np.inf,
         )
-        dist_b_to_set = np.amin(
+
+        dist_b_to_set: float = np.amin(
             layer_difference_matrix[layer_b],
             where=layer_difference_matrix[layer_b] != smallest_layer_difference,
             initial=np.inf,
