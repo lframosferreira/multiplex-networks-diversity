@@ -80,17 +80,14 @@ def layer_difference(
     node_dist_H = np.pad(
         node_dist_H, [(0, 0), (0, node_dist_H.shape[0] - node_dist_H.shape[1])]
     )
-
     node_distance_distribution_diff: npt.NDArray[np.float_] = JSD(
         node_dist_G, node_dist_H, axis=1
     )
     transition_matrix_diff: npt.NDArray[np.float_] = JSD(
         trans_mat_G, trans_mat_H, axis=1
     )
-
     node_distance_distribution_diff[np.isnan(node_distance_distribution_diff)] = 0
     transition_matrix_diff[np.isnan(transition_matrix_diff)] = 0
-
     node_difference: npt.NDArray[np.float_] = (
         node_distance_distribution_diff + transition_matrix_diff
     ) / 2
@@ -121,7 +118,6 @@ def less_contribute_rank(
     layer_difference_matrix: npt.NDArray[np.float_] = np.zeros(
         shape=((number_of_layers, number_of_layers)), dtype=np.float_
     )
-
     for i, j in combinations:
         layer_difference_matrix[i][j] = layer_difference(
             node_dist_G=node_distance_distributions[i],
@@ -131,38 +127,28 @@ def less_contribute_rank(
         )
 
     diversity: float = 0.0
-
     np.fill_diagonal(layer_difference_matrix, 1)
-
     ranking: npt.NDArray[np.int_] = np.empty(number_of_layers, dtype=np.int_)
-
     for i in np.arange(number_of_layers - 1):
         layer_a, layer_b = np.unravel_index(
             layer_difference_matrix.argmin(), layer_difference_matrix.shape
         )
-
         smallest_layer_difference: float = layer_difference_matrix[layer_a, layer_b]
-
         diversity += smallest_layer_difference
-
         dist_a_to_set: float = np.amin(
             layer_difference_matrix[layer_a],
             where=layer_difference_matrix[layer_a] != smallest_layer_difference,
             initial=np.inf,
         )
-
         dist_b_to_set: float = np.amin(
             layer_difference_matrix[layer_b],
             where=layer_difference_matrix[layer_b] != smallest_layer_difference,
             initial=np.inf,
         )
-
         less_contribute_layer: np.int_ = (
             layer_a if dist_a_to_set <= dist_b_to_set else layer_b
         )
-
         ranking[i] = less_contribute_layer
-
         layer_difference_matrix[less_contribute_layer, :] = np.inf
         layer_difference_matrix[:, less_contribute_layer] = np.inf
 
