@@ -18,9 +18,9 @@ https://github.com/tischieber/assessing_diversity_in_multiplex_networks
 
 ### Requirements
 
-- `numpy`
-- `scipy`
-- `pytest`
+All dependencies are in the _environment.yml_ file, to use it, follow this steps:
+
+- `conda env create -f environment.yml`
 
 ### Description
 
