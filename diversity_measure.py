@@ -89,12 +89,12 @@ def layer_difference(
     node_distance_distribution_diff[np.isnan(node_distance_distribution_diff)] = 0
     transition_matrix_diff[np.isnan(transition_matrix_diff)] = 0
     node_difference: npt.NDArray[np.float_] = (
-        node_distance_distribution_diff + transition_matrix_diff
-    ) / 2
-    return np.around(np.average(node_difference), decimals=4)
+        np.sqrt(node_distance_distribution_diff) + np.sqrt(transition_matrix_diff)
+    ) / (2 * np.sqrt(np.log(2)))
+    return np.average(node_difference)
 
 
-"""Calculates the less contribute ranking of the layer/graph network
+"""Calculates the less contribute ranking of the layer/graph network and it's global diversity measure
 
 @type node_dist_G: npt.NDArray[np.float_]
 @param node_dist_G: the list of node distributions for each layer/graph
@@ -103,18 +103,16 @@ def layer_difference(
 @param node_dist_G: the list of transition matrices for each layer/graph
 
 @rtype: npt.NDArray[np.int_]
-@returns: the less contribute ranking
+@returns: the less contribute ranking and the global diversity measure
 """
 
 
 def less_contribute_rank(
     node_distance_distributions: npt.NDArray[np.float_],
     trasition_matrices: npt.NDArray[np.float_],
-) -> npt.NDArray[np.int_]:
+) -> tuple[npt.NDArray[np.int_], np.float_]:
     number_of_layers: int = trasition_matrices.shape[0]
-    combinations: List[Tuple[int, int]] = list(
-        itertools.combinations(np.arange(number_of_layers), 2)
-    )
+    combinations = itertools.combinations(np.arange(number_of_layers), 2)
     layer_difference_matrix: npt.NDArray[np.float_] = np.zeros(
         shape=((number_of_layers, number_of_layers)), dtype=np.float_
     )
@@ -126,7 +124,7 @@ def less_contribute_rank(
             trans_mat_H=trasition_matrices[j],
         )
 
-    diversity: float = 0.0
+    global_diversity_measure: float = 0.0
     np.fill_diagonal(layer_difference_matrix, 1)
     ranking: npt.NDArray[np.int_] = np.empty(number_of_layers, dtype=np.int_)
     for i in np.arange(number_of_layers - 1):
@@ -134,7 +132,7 @@ def less_contribute_rank(
             layer_difference_matrix.argmin(), layer_difference_matrix.shape
         )
         smallest_layer_difference: float = layer_difference_matrix[layer_a, layer_b]
-        diversity += smallest_layer_difference
+        global_diversity_measure += smallest_layer_difference
         dist_a_to_set: float = np.amin(
             layer_difference_matrix[layer_a],
             where=layer_difference_matrix[layer_a] != smallest_layer_difference,
@@ -157,4 +155,4 @@ def less_contribute_rank(
         np.isin(np.arange(number_of_layers), ranking) == False
     )[0][0]
 
-    return ranking
+    return ranking, global_diversity_measure
