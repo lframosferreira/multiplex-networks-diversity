@@ -110,7 +110,7 @@ def layer_difference(
 def less_contribute_rank(
     node_distance_distributions: npt.NDArray[np.float_],
     trasition_matrices: npt.NDArray[np.float_],
-) -> tuple[npt.NDArray[np.int_], np.float_]:
+) -> tuple[npt.NDArray[np.int_], float]:
     number_of_layers: int = trasition_matrices.shape[0]
     combinations = itertools.combinations(np.arange(number_of_layers), 2)
     layer_difference_matrix: npt.NDArray[np.float_] = np.zeros(
