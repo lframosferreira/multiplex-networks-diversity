@@ -24,6 +24,4 @@ All dependencies are in the _environment.yml_ file, to use it, follow this steps
 
 ### Description
 
-The `diversity_measure.py` file contains all the functions described in the article and the description of their inputs and outputs.
-
-The `example.ipynb` contains a use demonstration of the functions in the analysis of the DESCRIPTION OF THE DATASET, which can be found in LOCATION
+The `diversity_measure.py` file contains all the functions described in the article and the description of their inputs and outputs. If you find any errors, please report an issue!
